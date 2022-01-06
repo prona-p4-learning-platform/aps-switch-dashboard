@@ -5,12 +5,18 @@
 #SDE=/home/netlabadmin/BF/bf-sde-9.4.0
 #SDE_INSTALL=$SDE/install
 
-###
+### BEGIN CONFIG
 
 #APS_ONE_TOUCH_VER=APS-One-touch-1.4.2
 #SAL_VER=sal_1.2.0
-APS_ONE_TOUCH_VER=APS-One-touch-1.6.1_2
+APS_ONE_TOUCH_VER=APS-One-touch-1.6.1
 SAL_VER=sal_1.3.5
+#APS_ONE_TOUCH_SETTINGS=""
+APS_ONE_TOUCH_SETTINGS_FILE="/home/netlabadmin/settings-9.7.yaml"
+
+### END CONFIG
+
+
 
 APS_ONE_TOUCH_REL=/home/netlabadmin/$APS_ONE_TOUCH_VER
 SAL_REL=$APS_ONE_TOUCH_VER/release/$SAL_VER
@@ -35,7 +41,12 @@ sudo tmux split-window -h -p 40 -t asd.0
 
 ### Window 0: Run sal.py, starting sal, SDE etc., opens gRPC SAL server
 
-sudo tmux send-keys -t asd.0 "cd $APS_ONE_TOUCH_REL && echo 'r' | sudo python3 sal.py" Enter
+# explicitly set SDE (e.g., since using sudo)
+# TODO: ingnore in this case, since sudo is using env of root?
+sudo tmux send-keys -t asd.0 "export SDE=$SDE" Enter
+sudo tmux send-keys -t asd.0 "export SDE_INSTALL=$SDE_INSTALL" Enter
+
+sudo tmux send-keys -t asd.0 "cd $APS_ONE_TOUCH_REL && echo 'r' | sudo python3 sal.py $APS_ONE_TOUCH_SETTINGS_FILE" Enter
 
 echo "Waiting for gRPC server on 50054..."
 while ! nc -z localhost 50054; do
@@ -62,8 +73,8 @@ sudo tmux send-keys -t asd.2 "./grpcurl -proto $SAL_REL/proto/sal_services.proto
 sudo tmux send-keys -t asd.2 "./grpcurl -proto $SAL_REL/proto/sal_services.proto -plaintext localhost:50054 sal_services.SwitchService.StartGearBox" Enter
 
 ### add and init ports through sal, only necessary for own p4 pgorams like pronarepeater, switch.p4 etc. will add ports themselves
-sudo tmux send-keys -t asd.2 "./grpcurl -d '{ \"portId\": { \"portNum\": 17, \"lane\": 0 }, \"portConf\": { \"speed\": 6, \"fec\": 3, \"an\": 2, \"enable\": 1 } }' -proto APS-One-touch-1.4.1/release/sal/proto/sal_services.proto -plaintext localhost:50054 sal_services.SwitchService.AddPort" Enter
-sudo tmux send-keys -t asd.2 "./grpcurl -d '{ \"portId\": { \"portNum\": 18, \"lane\": 0 }, \"portConf\": { \"speed\": 6, \"fec\": 3, \"an\": 2, \"enable\": 1 } }' -proto APS-One-touch-1.4.1/release/sal/proto/sal_services.proto -plaintext localhost:50054 sal_services.SwitchService.AddPort" Enter
+sudo tmux send-keys -t asd.2 "./grpcurl -d '{ \"portId\": { \"portNum\": 17, \"lane\": 0 }, \"portConf\": { \"speed\": 6, \"fec\": 3, \"an\": 2, \"enable\": 1 } }' -proto $SAL_REL/release/sal/proto/sal_services.proto -plaintext localhost:50054 sal_services.SwitchService.AddPort" Enter
+sudo tmux send-keys -t asd.2 "./grpcurl -d '{ \"portId\": { \"portNum\": 18, \"lane\": 0 }, \"portConf\": { \"speed\": 6, \"fec\": 3, \"an\": 2, \"enable\": 1 } }' -proto $SAL_REL/release/sal/proto/sal_services.proto -plaintext localhost:50054 sal_services.SwitchService.AddPort" Enter
 
 ### get config from sal
 #sudo tmux send-keys -t asd.2 "./grpcurl -d '{ \"portNum\": 16, \"lane\": 0}' -proto APS-One-touch-1.4.1/release/sal/proto/sal_services.proto -plaintext localhost:50054 sal_services.SwitchService.GetPortConfig" Enter

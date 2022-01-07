@@ -29,6 +29,7 @@ SAL_REL=$APS_ONE_TOUCH_VER/release/$SAL_VER
 ### compile p4 prog and configure sal etc.
 
 
+# maybe offer option to attach if session already exists?
 sudo tmux kill-session -t asd
 
 sudo tmux new-session -d -s asd

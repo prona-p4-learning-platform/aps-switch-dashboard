@@ -8,7 +8,7 @@ The script can be used interactivey after the switch is booted and can run headl
 
 ## Installation
 
-Script expects Ubuntu 18.04 or 20.04 as well as APS One Touch (AOT) incl. Intel SDE and APS BSP/SAL to be already installed on the switch. See, e.g., APS support forum or https://github.com/APS-Networks/APS-One-touch for installation instructions.
+Script expects Ubuntu 18.04 or 20.04 as well as APS One Touch (AOT) incl. Intel SDE and APS BSP/SAL to be already installed on the switch. See, e.g., APS support forum or https://github.com/APS-Networks/APS-One-touch for installation instructions. This repo also provides a rudimentary script for the steps to install AOT, SDE, BSP and SAL: [install-aot-sde-bsp-sal.sh](scripts/install-aot-sde-bsp-sal.sh). This will be improved and possibly included in the start script for the dashboard.
 
 ```sh
 wget https://raw.githubusercontent.com/prona-p4-learning-platform/aps-switch-dashboard/master/start-switch.sh
@@ -37,6 +37,14 @@ See tmux manual or cheat sheet for further commands and possible customizations 
 Result should look similar to the following screenshot. In the upper left pane the start and output of AOT's `python3 sal.py` is shown. The pane to the right shows the corresponding BSP/hareware platform log output, e.g., showing low-level port and SFP changes. The pane in the middle is used to first send grpc commands to the SAL, esp. issuing the start of the Marvell Gearbox to be able to use the ports of the switch. later it can be used as a shell to interact with SDE etc. The lower pane is running bfshell, hence offering access to the SDE shell and underlying hardware configuration. The screenshot below is showing a scenario in which a simple "hello world"-like [pronarepeater.p4](https://github.com/prona-p4-learning-platform/p4-boilerplate/tree/main/Example1-Repeater) is used to forward traffic between front panel ports 17 and 18 (device ports 44 and 45 in pronarepeater.p4) of the switch. The lower bfshell pane shows the result of an ICMP ping being sent over these ports.
 
 ![APS Switch Dashboard screenshot](images/asd-screenshot.png)
+
+## Compiling your own P4 code
+
+P4 programs that have been build in the SDE can be selected using p4_prog in settings.yaml file of AOT. To compile your P4 program you can find a description in the manual of the Intel SDE or use the script [p4-build-cmake.sh](scripts/p4-build-cmake.sh) that is provided in this repo.
+
+```sh
+./p4-build-cmake.sh pronarepeater # expects to have pronarepeater.p4 in the current directory
+```
 
 ## Next steps
 

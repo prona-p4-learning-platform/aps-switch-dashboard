@@ -3,14 +3,23 @@
 # TODO: define location for SDE -> remove all SCP in this script
 # TODO: "ansible"ize
 
+# Set your home directory here, i.e., your work directory for this
+WORKDIR=/home/netlabadmin
+
+if [ ! -d "$WORKDIR" ]; then
+  echo "Your workdir ${WORKDIR} does not exist"
+  exit 1
+fi
+
+# TODO: should this be set to WORKDIR?
 cd ~
 
 sudo apt -y update
 sudo apt -y upgrade
 
-scp -o "StrictHostKeyChecking no" netlabadmin@192.168.73.192:/home/netlabadmin/9.7.0_AOT1.6.1_SAL1.3.5_2.zip .
-scp -o "StrictHostKeyChecking no" netlabadmin@192.168.73.192:/home/netlabadmin/BF/*.tgz . # e.g., bf-sde-9.7.0.tgz
-#scp netlabadmin@192.168.73.192:/home/netlabadmin/bsp/*.tgz . # e.g., bf-reference-bsp-9.7.0.tgz
+scp -o "StrictHostKeyChecking no" netlabadmin@192.168.73.192:$WORKDIR/9.7.0_AOT1.6.1_SAL1.3.5_2.zip .
+scp -o "StrictHostKeyChecking no" netlabadmin@192.168.73.192:$WORKDIR/BF/*.tgz . # e.g., bf-sde-9.7.0.tgz
+#scp netlabadmin@192.168.73.192:$WORKDIR/bsp/*.tgz . # e.g., bf-reference-bsp-9.7.0.tgz
 
 mkdir BF
 mkdir bsp
@@ -32,7 +41,7 @@ cat << EOF > settings-9.7.yaml
 
 # for more information see settings.yaml in AOT directory or https://github.com/APS-Networks/APS-One-touch/blob/master/settings.yaml
 
-PATH_PREFIX: /home/netlabadmin # enforces SDE location, if omitted home dir is using, leading to the SDE not being found when using sudo
+PATH_PREFIX: $WORKDIR # enforces SDE location, if omitted home dir is using, leading to the SDE not being found when using sudo
 
 BSP:
   aps_bsp_pkg: /bsp/bf-reference-bsp-9.7.0-BF2556_1.0.1 #Porting code for APS switch.
@@ -73,14 +82,14 @@ echo -e "y\nY\ny\nn" | python3 bf_sde.py ~/settings-9.7.yaml
 # cd /home/netlabadmin/bsp/bf-reference-bsp-9.7.0-BF2556_1.0.1
 # cmake .
 
-export SDE=/home/netlabadmin/BF/bf-sde-9.7.0
+export SDE=$WORKDIR/BF/bf-sde-9.7.0
 export SDE_INSTALL=$SDE/install
 
-echo "export SDE=/home/netlabadmin/BF/bf-sde-9.7.0" >>~/.bashrc
+echo "export SDE=$WORKDIR/BF/bf-sde-9.7.0" >>~/.bashrc
 echo "export SDE_INSTALL=$SDE/install" >>~/.bashrc
 
 # is there a better way to get SDE/SDE_INSTALL active for user as well as sudo (root)?
-echo "export SDE=/home/netlabadmin/BF/bf-sde-9.7.0" | sudo tee -a /root/.bashrc
+echo "export SDE=$WORKDIR/BF/bf-sde-9.7.0" | sudo tee -a /root/.bashrc
 echo "export SDE_INSTALL=$SDE/install" | sudo tee -a /root/.bashrc
 
 # ugly patch - maybe improve by adding kernel module build to SDE? see also: https://aps-networks.atlassian.net/servicedesk/customer/portal/3/article/1204846593
@@ -90,7 +99,7 @@ cmake . ##You may need to add line like cmake_minimum_required(VERSION 3.13) at 
 make ##might throw some errors but check respective kernel directory i.e. ./bf_kdrv/bf_kdrv.ko##
 cd bf_kdrv
 sudo insmod bf_kdrv.ko
-# sudo make install # etc. would be an idea? place kf_kdrv.ko in modules dir etc.? currently breaks, maybe fix build or add kernel modules to build of SDE using 
+# sudo make install # etc. would be an idea? place kf_kdrv.ko in modules dir etc.? currently breaks, maybe fix build or add kernel modules to build of SDE using
 mkdir -p $SDE_INSTALL/lib/modules/
 cp $SDE/pkgsrc/bf-drivers/kdrv/bf_kdrv/bf_kdrv.ko $SDE_INSTALL/lib/modules/
 
@@ -116,8 +125,8 @@ tar zxvf grpcurl_1.8.5_linux_x86_64.tar.gz
 
 # settings: p4_prog: pronarepeater
 
-scp netlabadmin@192.168.73.192:/home/netlabadmin/pronarepeater.p4 .
-scp netlabadmin@192.168.73.192:/home/netlabadmin/p4-build-cmake.sh .
+scp netlabadmin@192.168.73.192:$WORKDIR/pronarepeater.p4 .
+scp netlabadmin@192.168.73.192:$WORKDIR/p4-build-cmake.sh .
 
 ./p4-build-cmake.sh pronarepeater
 # second run necessary due to configure?
@@ -130,7 +139,7 @@ scp netlabadmin@192.168.73.192:/home/netlabadmin/p4-build-cmake.sh .
 #2022-01-07 15:52:39.904309 BF_PM ERROR - bf_pm_port_front_panel_port_to_dev_port_get:4245 bf_pm_port_front_pan│2022-01-07 15:52:39.904283 DEBUG BF_PM pm_port_info_get_from_port_hdl:168 pm_port_info_get_from
 #el_port_to_dev_port_get: front port 34/0 : not found                                                          │_port_hdl: Unable to get port info: 34/0
 #2022-01-07 15:52:40.906772 BF_PM ERROR - bf_pm_port_front_panel_port_to_dev_port_get:4245 bf_pm_port_front_pan│2022-01-07 15:52:39.904309 ERROR BF_PM bf_pm_port_front_panel_port_to_dev_port_get:4245 bf_pm_p
-#el_port_to_dev_port_get: front port 17/0 : not found     
+#el_port_to_dev_port_get: front port 17/0 : not found
 
 # seams resolved after build BSP again? start SDE using python3 bf_sde.py?
 

@@ -2,7 +2,7 @@
 
 ![APS Switch Dashboard GIF screen capture](images/aps-switch-dashboard-small.gif)
 
-tmux script to initialize and operate AWS switches like the BF2556X-1T. Still work in progress. The dashboard can be taylored to your needs using tmux commands. In the default form it will include a pane that runs SAL to start SDE/BSP. A second pane that shows the logging output of SAL/SDE/BSP. A third pane that runs the initialization commands for the switch (esp. starting Marvell Gearbox to bring up the ports) and afterwards offers a shell. And finally a fourth pane that opens bfshell to interact with the SDE and underlying hardware, e.g., using bfrt_python, ucli etc.
+tmux script to initialize and operate APS switches like the BF2556X-1T. Still work in progress. The dashboard can be taylored to your needs using tmux commands. In the default form it will include a pane that runs SAL to start SDE/BSP. A second pane that shows the logging output of SAL/SDE/BSP. A third pane that runs the initialization commands for the switch (esp. starting Marvell Gearbox to bring up the ports) and afterwards offers a shell. And finally a fourth pane that opens bfshell to interact with the SDE and underlying hardware, e.g., using bfrt_python, ucli etc.
 
 The script can be used interactivey after the switch is booted and can run headless. Hence, it can also be started directly during the boot process using systemd. It starts a tmux session "asd" that can be accessed later using `sudo tmux attach -t asd`.
 

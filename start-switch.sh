@@ -13,6 +13,7 @@ APS_ONE_TOUCH_VER=APS-One-touch-1.6.1
 SAL_VER=sal_1.3.5
 #APS_ONE_TOUCH_SETTINGS=""
 APS_ONE_TOUCH_SETTINGS_FILE="/home/netlabadmin/settings-9.7.yaml"
+GRPC_PORT=50054
 
 ### END CONFIG
 
@@ -40,7 +41,7 @@ sudo tmux split-window -h -p 40 -t asd.0
 
 
 
-### Window 0: Run sal.py, starting sal, SDE etc., opens gRPC SAL server
+### Window 0: Run sal.py, starting sal, SDE etc., waits for gRPC SAL server to become available
 
 # explicitly set SDE (e.g., since using sudo)
 # TODO: ingnore in this case, since sudo is using env of root?
@@ -49,8 +50,8 @@ sudo tmux send-keys -t asd.0 "export SDE_INSTALL=$SDE_INSTALL" Enter
 
 sudo tmux send-keys -t asd.0 "cd $APS_ONE_TOUCH_REL && echo 'r' | sudo python3 sal.py $APS_ONE_TOUCH_SETTINGS_FILE" Enter
 
-echo "Waiting for gRPC server on 50054..."
-while ! nc -z localhost 50054; do
+echo "Waiting for gRPC server on port port $GRPC_PORT..."
+while ! nc -z localhost $GRPC_PORT; do
   sleep 0.1
 done
 

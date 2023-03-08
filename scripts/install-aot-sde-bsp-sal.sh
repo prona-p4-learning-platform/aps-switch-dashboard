@@ -19,7 +19,7 @@ AOT_BUNDLE_MINOR_VERSION="_2"
 APS_BSP_VERSION="9.7.0-BF2556_1.0.1" # see porting code for APS switch version in sample settings.yaml of AOT all-in-one bundle
 KERNEL_MODULES="- bf_kdrv" # modules that will be loaded before SDE is started, i.e., "- bf_kdrv" or "- bf_kpkt\n  -bf_knet.ko"
 
-GRPCUL_VERSION="1.8.5" # see https://github.com/fullstorydev/grpcurl/releases
+GRPCURL_VERSION="1.8.5" # see https://github.com/fullstorydev/grpcurl/releases
 
 SETTINGS_FILE="settings-9.7.yaml"
 P4_PROG="pronarepeater"
@@ -27,7 +27,7 @@ CMD_TO_GET_P4_PROG="wget https://raw.githubusercontent.com/prona-p4-learning-pla
 P4_BUILD_SCRIPT="p4-build-cmake.sh"
 CMD_TO_GET_P4_BUILD_SCRIPT="wget https://raw.githubusercontent.com/prona-p4-learning-platform/aps-switch-dashboard/master/scripts/p4-build-cmake.sh"
 
-SCP_LOCATION="netlabadmin@192.168.73.192:/home/netlabadmin/" # excepted to contain Intel SDE (e.g., bf-sde-9.7.0.tar.gz), AOT bundle (e.g., 9.7.0_AOT1.6.1_SAL1.3.5_2.zip) and p4 source file (e.g., pronarepeater.p4) and p4 build script (e.g., p4-build-cmake.sh)
+SCP_LOCATION="netlabadmin@192.168.73.192:/home/netlabadmin/" # expected to contain Intel SDE (e.g., bf-sde-9.7.0.tar.gz), AOT bundle (e.g., 9.7.0_AOT1.6.1_SAL1.3.5_2.zip) and p4 source file (e.g., pronarepeater.p4) as well as p4 build script (e.g., p4-build-cmake.sh)
 
 ### END CONFIG
 
@@ -80,19 +80,19 @@ BSP:
 
 BF SDE:
   sde_pkg: /BF/bf-sde-$SDE_VERSION.tgz
-  sde_home: /BF/bf-sde-$SDE_VERSION #Path will be automatically created by AOT, this is SDE installation dir path (relative to PATH_PREFIX as every other path in this file). If left blank default is APS-One-touch/<bf-sde-x.y.z>.
+  sde_home: /BF/bf-sde-$SDE_VERSION # path will be automatically created by AOT, this is SDE installation dir path (relative to PATH_PREFIX as every other path in this file). If left blank default is APS-One-touch/<bf-sde-x.y.z>.
   p4studio_build_profile: /BF/bf-sde-$SDE_VERSION/p4studio/profiles/$SDE_BUILD_PROFILE
-  #p4_prog: #Leave it blank to start SDE without a P4 program or give p4 program name which is already built in SDE.
+  #p4_prog: # leave it blank to start SDE without a P4 program or give p4 program name which is already built in SDE.
   p4_prog: $P4_PROG
-  modules: #Following barefoot SDE modules will be loaded before starting SDE.
+  modules: # following barefoot SDE modules will be loaded before starting SDE.
     $KERNEL_MODULES
 
 SAL :
-  sal_home: /APS-One-touch-$AOT_VERSION/release/sal_$SAL_VERSION #Path to directory where SAL artifacts are present
-  tp_install: #3rdParty libs path to run the SAL, defaults to <sal_home>/sal_tp_install
-  # If executing SAL tests configure
-  dut_ips: #One or more <Switch_IP:SAL_gRPC_port> to execute SAL tests upon,
-           #SAL should be running on following device address(es) before running any tests.
+  sal_home: /APS-One-touch-$AOT_VERSION/release/sal_$SAL_VERSION # path to directory where SAL artifacts are present
+  tp_install: # 3rd party libs path to run the SAL, defaults to <sal_home>/sal_tp_install
+  # if executing SAL tests configure
+  dut_ips: # one or more <Switch_IP:SAL_gRPC_port> to execute SAL tests upon,
+           # SAL should be running on following device address(es) before running any tests.
     - 127.0.0.1:50054
 EOF
 
@@ -125,8 +125,8 @@ echo "export SDE_INSTALL=$SDE/install" | sudo tee -a /root/.bashrc
 # ugly patch - maybe improve by adding kernel module build to SDE? see also: https://aps-networks.atlassian.net/servicedesk/customer/portal/3/article/1204846593
 cd $SDE/pkgsrc/bf-drivers/kdrv/
 sed -i '1s;^;cmake_minimum_required(VERSION 3.13)\n;' CMakeLists.txt
-cmake . ##You may need to add line like cmake_minimum_required(VERSION 3.13) at the begining od CMakeList.txt##
-make ##might throw some errors but check respective kernel directory i.e. ./bf_kdrv/bf_kdrv.ko##
+cmake . # You may need to add line like cmake_minimum_required(VERSION 3.13) at the begining od CMakeList.txt
+make # might throw some errors but check respective kernel directory i.e. ./bf_kdrv/bf_kdrv.ko
 cd bf_kdrv
 sudo insmod bf_kdrv.ko
 # sudo make install # etc. would be an idea? place kf_kdrv.ko in modules dir etc.? currently breaks, maybe fix build or add kernel modules to build of SDE using
@@ -149,8 +149,8 @@ wget https://raw.githubusercontent.com/prona-p4-learning-platform/aps-switch-das
 chmod +x start-switch.sh
 sudo apt install tmux
 
-wget https://github.com/fullstorydev/grpcurl/releases/download/v$GRPCUL_VERSION/grpcurl_${GRPCUL_VERSION}_linux_x86_64.tar.gz
-tar zxvf grpcurl_${GRPCUL_VERSION}_linux_x86_64.tar.gz
+wget https://github.com/fullstorydev/grpcurl/releases/download/v$GRPCURL_VERSION/grpcurl_${GRPCURL_VERSION}_linux_x86_64.tar.gz
+tar zxvf grpcurl_${GRPCURL_VERSION}_linux_x86_64.tar.gz
 ./grpcurl -version
 
 echo "Example to compile $P4_PROG as referenced in sample settings-9.7.yaml..."

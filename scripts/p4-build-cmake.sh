@@ -1,5 +1,11 @@
 #!/bin/bash
+
 # expects SDE and SDE_INSTALL env vars to be set correctly, i.e., pointing to an SDE installation
+#
+# usage: p4-build-cmake.sh <p4-program-name>
+# example: p4-build-cmake.sh pronarepeater
+#   this would compile pronarepeater.p4 from the current directory to be available as 
+#   program pronarepeater in $SDE_INSTALL
 
 WORKDIR=$PWD
 mkdir $WORKDIR/build

@@ -72,11 +72,12 @@ sudo tmux send-keys -t asd.2 "export SDE_INSTALL=$SDE_INSTALL" Enter
 sudo tmux send-keys -t asd.2 "./grpcurl -proto $SAL_REL/proto/sal_services.proto -plaintext localhost:50054 sal_services.SwitchService.TestConnection" Enter
 sudo tmux send-keys -t asd.2 "./grpcurl -proto $SAL_REL/proto/sal_services.proto -plaintext localhost:50054 sal_services.SwitchService.GetSwitchModel" Enter
 sudo tmux send-keys -t asd.2 "./grpcurl -proto $SAL_REL/proto/sal_services.proto -plaintext localhost:50054 sal_services.SwitchService.StartTofino" Enter
-sudo tmux send-keys -t asd.2 "./grpcurl -proto $SAL_REL/proto/sal_services.proto -plaintext localhost:50054 sal_services.SwitchService.StartGearBox" Enter
+### gearbox only needs to be started, if the first 16 ports are used (which are connected to tofino through Marvell gearbox)
+#sudo tmux send-keys -t asd.2 "./grpcurl -proto $SAL_REL/proto/sal_services.proto -plaintext localhost:50054 sal_services.SwitchService.StartGearBox" Enter
 
-### add and init ports through sal, only necessary for own p4 pgorams like pronarepeater, switch.p4 etc. will add ports themselves
-sudo tmux send-keys -t asd.2 "./grpcurl -d '{ \"portId\": { \"portNum\": 17, \"lane\": 0 }, \"portConf\": { \"speed\": 6, \"fec\": 3, \"an\": 2, \"enable\": 1 } }' -proto $SAL_REL/release/sal/proto/sal_services.proto -plaintext localhost:50054 sal_services.SwitchService.AddPort" Enter
-sudo tmux send-keys -t asd.2 "./grpcurl -d '{ \"portId\": { \"portNum\": 18, \"lane\": 0 }, \"portConf\": { \"speed\": 6, \"fec\": 3, \"an\": 2, \"enable\": 1 } }' -proto $SAL_REL/release/sal/proto/sal_services.proto -plaintext localhost:50054 sal_services.SwitchService.AddPort" Enter
+### add and init ports through sal, only necessary for own p4 programs like pronarepeater, switch.p4 etc. will add ports themselves
+sudo tmux send-keys -t asd.2 "./grpcurl -d '{ \"portId\": { \"portNum\": 17, \"lane\": 0 }, \"portConf\": { \"speed\": 6, \"fec\": 3, \"an\": 2, \"enable\": 1 } }' -proto $SAL_REL/proto/sal_services.proto -plaintext localhost:50054 sal_services.SwitchService.AddPort" Enter
+sudo tmux send-keys -t asd.2 "./grpcurl -d '{ \"portId\": { \"portNum\": 18, \"lane\": 0 }, \"portConf\": { \"speed\": 6, \"fec\": 3, \"an\": 2, \"enable\": 1 } }' -proto $SAL_REL/proto/sal_services.proto -plaintext localhost:50054 sal_services.SwitchService.AddPort" Enter
 
 ### get config from sal
 #sudo tmux send-keys -t asd.2 "./grpcurl -d '{ \"portNum\": 16, \"lane\": 0}' -proto APS-One-touch-1.4.1/release/sal/proto/sal_services.proto -plaintext localhost:50054 sal_services.SwitchService.GetPortConfig" Enter
